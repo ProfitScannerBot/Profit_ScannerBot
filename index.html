@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profit_ScannerBot - Trading Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #0a0e17 0%, #141b2d 50%, #1a2335 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            min-height: 100vh;
+            padding: 30px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .header-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .header-title {
+            font-size: 12px;
+            font-weight: 400;
+            color: #8892b0;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .header-subtitle {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 4px;
+            background: linear-gradient(90deg, #64ffda, #48c9b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 20px 0;
+        }
+
+        /* Status Display */
+        .status-display {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .status-main {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .status-main .highlight {
+            color: #64ffda;
+        }
+
+        .status-sub {
+            font-size: 14px;
+            color: #8892b0;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        /* Animated Dots */
+        .dots {
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        .dots span {
+            display: inline-block;
+            animation: dotBounce 1.4s infinite;
+            font-size: 28px;
+        }
+
+        .dots span:nth-child(2) { animation-delay: 0.2s; }
+        .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotBounce {
+            0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+            40% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Signal Card */
+        .signal-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(100, 255, 218, 0.15);
+            border-radius: 16px;
+            padding: 25px 30px;
+            width: 100%;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            display: none;
+            animation: fadeSlideIn 0.5s ease;
+        }
+
+        .signal-card.show {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .signal-asset {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .signal-asset .otc {
+            font-size: 12px;
+            color: #64ffda;
+            font-weight: 400;
+            background: rgba(100, 255, 218, 0.15);
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+
+        .signal-direction {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .signal-direction .arrow {
+            font-size: 40px;
+            font-weight: 700;
+        }
+
+        .signal-direction .arrow.up {
+            color: #64ffda;
+        }
+
+        .signal-direction .arrow.down {
+            color: #ff6b6b;
+        }
+
+        .signal-direction .dir-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .signal-details {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .signal-detail-item {
+            text-align: center;
+        }
+
+        .signal-detail-item .label {
+            font-size: 10px;
+            color: #8892b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .signal-detail-item .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 2px;
+        }
+
+        .signal-detail-item .value.green {
+            color: #64ffda;
+        }
+
+        /* Button */
+        .action-button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #64ffda, #48c9b0);
+            color: #0a0e17;
+            box-shadow: 0 4px 25px rgba(100, 255, 218, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 35px rgba(100, 255, 218, 0.35);
+        }
+
+        .action-button:active {
+            transform: scale(0.98);
+        }
+
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .action-button .button-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Loading pulse */
+        .action-button.loading {
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+            color: #a0aec0;
+        }
+
+        /* Footer */
+        .footer {
+            font-size: 10px;
+            color: #4a5568;
+            text-align: center;
+            margin-top: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+            .status-main {
+                font-size: 22px;
+            }
+            .signal-asset {
+                font-size: 18px;
+            }
+            .signal-details {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon">📊</div>
+            <div class="header-title">Profit_ScannerBot</div>
+            <div class="header-subtitle">WELCOME TO ANALYZER</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Status Display -->
+            <div class="status-display" id="statusDisplay">
+                <div class="status-main" id="statusMain">
+                    GOOD LUCK<br>TRADING
+                </div>
+                <div class="status-sub" id="statusSub">
+                    WAITING FOR START
+                </div>
+            </div>
+
+            <!-- Signal Card -->
+            <div class="signal-card" id="signalCard">
+                <div class="signal-asset">
+                    <span id="signalAsset">BTC/USD</span>
+                    <span class="otc">OTC</span>
+                </div>
+                <div class="signal-direction">
+                    <span class="arrow up" id="signalArrow">↑</span>
+                    <span class="dir-text" id="signalDir">BUY</span>
+                </div>
+                <div class="signal-details">
+                    <div class="signal-detail-item">
+                        <div class="label">Time</div>
+                        <div class="value" id="signalTime">5 MIN</div>
+                    </div>
+                    <div class="signal-detail-item">
+                        <div class="label">Profit</div>
+                        <div class="value green" id="signalProfit">87%</div>
+                    </div>
+                    <div class="signal-detail-item">
+                        <div class="label">Confidence</div>
+                        <div class="value green" id="signalConfidence">92%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button class="action-button" id="actionBtn">
+                <span class="button-text">GET SIGNAL</span>
+            </button>
+
+            <div class="footer">Powered by Profit_ScannerBot v1.0</div>
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+
+            const statusMain = document.getElementById('statusMain');
+            const statusSub = document.getElementById('statusSub');
+            const signalCard = document.getElementById('signalCard');
+            const actionBtn = document.getElementById('actionBtn');
+            const btnText = actionBtn.querySelector('.button-text');
+
+            const signalAsset = document.getElementById('signalAsset');
+            const signalArrow = document.getElementById('signalArrow');
+            const signalDir = document.getElementById('signalDir');
+            const signalTime = document.getElementById('signalTime');
+            const signalProfit = document.getElementById('signalProfit');
+            const signalConfidence = document.getElementById('signalConfidence');
+
+            let isAnalyzing = false;
+
+            // Asset data for simulation
+            const assets = [
+                { name: 'BTC/USD', price: '61,234', change: '+2.3%', dir: 'up' },
+                { name: 'ETH/USD', price: '2,987', change: '+1.8%', dir: 'up' },
+                { name: 'EUR/USD', price: '1.0874', change: '-0.4%', dir: 'down' },
+                { name: 'GBP/JPY', price: '188.45', change: '+0.7%', dir: 'up' },
+                { name: 'USD/CAD', price: '1.3452', change: '+0.5%', dir: 'up' },
+                { name: 'AUD/USD', price: '0.6543', change: '-0.8%', dir: 'down' }
+            ];
+
+            const directions = ['BUY', 'SELL'];
+            const timeframes = ['3 MIN', '5 MIN', '10 MIN', '15 MIN'];
+            const profits = ['85%', '87%', '90%', '92%'];
+            const confidences = ['78%', '82%', '87%', '92%', '95%'];
+
+            function getRandomItem(arr) {
+                return arr[Math.floor(Math.random() * arr.length)];
+            }
+
+            function getRandomAsset() {
+                return assets[Math.floor(Math.random() * assets.length)];
+            }
+
+            // Update status with animation
+            function updateStatus(mainText, subText, showCard = false) {
+                statusMain.innerHTML = mainText;
+                statusSub.textContent = subText;
+
+                if (showCard) {
+                    signalCard.classList.add('show');
+                } else {
+                    signalCard.classList.remove('show');
+                }
+            }
+
+            // Show analyzing state
+            function startAnalyzing() {
+                isAnalyzing = true;
+                actionBtn.disabled = true;
+                actionBtn.classList.add('loading');
+                btnText.textContent = 'ANALYZING...';
+
+                updateStatus(
+                    'MARKET<br>ANALYSIS',
+                    'Volatility analysis in progress...'
+                );
+            }
+
+            // Generate and show signal
+            function showSignal() {
+                const asset = getRandomAsset();
+                const direction = getRandomItem(directions);
+                const timeframe = getRandomItem(timeframes);
+                const profit = getRandomItem(profits);
+                const confidence = getRandomItem(confidences);
+
+                signalAsset.textContent = asset.name;
+                signalArrow.textContent = asset.dir === 'up' ? '↑' : '↓';
+                signalArrow.className = `arrow ${asset.dir}`;
+                signalDir.textContent = direction;
+                signalTime.textContent = timeframe;
+                signalProfit.textContent = profit;
+                signalConfidence.textContent = confidence;
+
+                updateStatus(
+                    'SIGNAL<br>READY',
+                    'Trade signal generated successfully',
+                    true
+                );
+
+                // Send data to bot
+                tg.sendData(JSON.stringify({
+                    action: 'get_signal',
+                    asset: asset.name,
+                    direction: direction,
+                    timeframe: timeframe,
+                    profit: profit,
+                    confidence: confidence
+                }));
+            }
+
+            // Main button click handler
+            actionBtn.addEventListener('click', function() {
+                if (isAnalyzing) return;
+
+                const currentText = btnText.textContent;
+
+                if (currentText === 'GET SIGNAL' || currentText === 'GET NEW SIGNAL') {
+                    startAnalyzing();
+
+                    // Simulate analysis delay
+                    setTimeout(() => {
+                        showSignal();
+                        isAnalyzing = false;
+                        actionBtn.disabled = false;
+                        actionBtn.classList.remove('loading');
+                        btnText.textContent = 'GET NEW SIGNAL';
+                    }, 2500);
+                } else if (currentText === 'GET NEW SIGNAL') {
+                    // Reset to start
+                    resetToStart();
+                }
+            });
+
+            function resetToStart() {
+                isAnalyzing = false;
+                actionBtn.disabled = false;
+                actionBtn.classList.remove('loading');
+                btnText.textContent = 'GET SIGNAL';
+                signalCard.classList.remove('show');
+                updateStatus(
+                    'GOOD LUCK<br>TRADING',
+                    'System ready for analysis'
+                );
+            }
+
+            // Initial state
+            updateStatus(
+                'GOOD LUCK<br>TRADING',
+                'System ready for analysis'
+            );
+
+            // Auto-start analysis when app opens (optional)
+            setTimeout(() => {
+                // Можно автоматически показать приветствие
+                updateStatus(
+                    'GOOD LUCK<br>TRADING',
+                    'Press GET SIGNAL to start'
+                );
+            }, 500);
+        });
+    </script>
+
+</body>
+</html>
