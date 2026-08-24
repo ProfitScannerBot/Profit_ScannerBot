@@ -40,26 +40,21 @@
             margin-bottom: 40px;
         }
 
-        .header-icon {
-            font-size: 36px;
-            opacity: 0.7;
-            margin-bottom: 6px;
-        }
-
         .header-title {
-            font-size: 11px;
-            font-weight: 400;
-            color: #4a6a9f;
-            letter-spacing: 4px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #d0e0ff;
+            letter-spacing: 3px;
             text-transform: uppercase;
         }
 
         .header-sub {
-            font-size: 18px;
-            font-weight: 600;
-            color: #7a9fd8;
-            letter-spacing: 2px;
-            margin-top: 2px;
+            font-size: 11px;
+            font-weight: 400;
+            color: #4a6a9f;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-top: 4px;
         }
 
         /* ===== MAIN STATUS ===== */
@@ -119,6 +114,7 @@
             font-size: 48px;
             margin-bottom: 16px;
             animation: spinPulse 2s ease-in-out infinite;
+            color: #5a8fd4;
         }
 
         @keyframes spinPulse {
@@ -331,6 +327,7 @@
             .signal-arrow { font-size: 34px; }
             .signal-dir-text { font-size: 18px; }
             .signal-detail .value { font-size: 15px; }
+            .header-title { font-size: 18px; }
         }
     </style>
 </head>
@@ -340,7 +337,6 @@
 
     <!-- HEADER -->
     <div class="header">
-        <div class="header-icon">📊</div>
         <div class="header-title">Profit Scanner</div>
         <div class="header-sub">ANALYZER</div>
     </div>
@@ -499,7 +495,6 @@
             }
         });
 
-        // Initial state
         resetToStart();
     });
 </script>
