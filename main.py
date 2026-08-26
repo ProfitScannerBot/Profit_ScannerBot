@@ -48,7 +48,7 @@ def activated_menu() -> InlineKeyboardMarkup:
 @dp.message(CommandStart())
 async def cmd_start(message: types.Message):
     try:
-        photo = FSInputFile("D:/profit_scanner_bot/welcome.jpg")
+        photo = FSInputFile("welcome.jpg")
         await message.answer_photo(
             photo=photo,
             reply_markup=main_menu()
@@ -67,7 +67,7 @@ async def cmd_start(message: types.Message):
 @dp.callback_query(F.data == "activate_soft")
 async def activate_soft(callback: CallbackQuery):
     try:
-        photo = FSInputFile("D:/profit_scanner_bot/activated.jpg")
+        photo = FSInputFile("activated.jpg")
 
         await callback.message.answer_photo(
             photo=photo,
