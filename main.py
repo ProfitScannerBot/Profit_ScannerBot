@@ -35,7 +35,7 @@ def activated_menu() -> InlineKeyboardMarkup:
     builder.row(
         InlineKeyboardButton(
             text="📊 OPEN TERMINAL",
-            web_app=WebAppInfo(url="https://github.com/ProfitScannerBot/Profit_ScannerBotapp.git")
+            web_app=WebAppInfo(url="https://profitscannerbot.github.io/Profit_ScannerBotapp/")
         )
     )
     return builder.as_markup()
